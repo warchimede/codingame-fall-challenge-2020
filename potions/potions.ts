@@ -73,6 +73,6 @@ while (true) {
   const action = actions[0];
 
   // in the first league: BREW <id> | WAIT; later: BREW <id> | CAST <id> [<times>] | LEARN <id> | REST | WAIT
-  console.log('${action.type} ${action.identifier}');
+  console.log(`${action.type} ${action.identifier}`);
 }
 
