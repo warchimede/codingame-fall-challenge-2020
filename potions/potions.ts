@@ -38,6 +38,8 @@ class Action {
   }
 }
 
+const inventoryCapacity = 10
+
 // game loop
 while (true) {
   var actions: Action[] = []
@@ -69,7 +71,9 @@ while (true) {
     const inv3: number = parseInt(inputs[3]);
     const score: number = parseInt(inputs[4]); // amount of rupees
 
-    inventory = [inv0, inv1, inv2, inv3]
+    if (i == 0) {
+      inventory = [inv0, inv1, inv2, inv3]
+    }
   }
 
   // Write an action using console.log()
@@ -88,13 +92,15 @@ while (true) {
       inventory[3] + action.delta3 >= 0
     )
 
-  const availableCasts = casts.filter( action =>
-    action.castable &&
-    inventory[0] + action.delta0 >= 0 &&
-    inventory[1] + action.delta1 >= 0 &&
-    inventory[2] + action.delta2 >= 0 &&
-    inventory[3] + action.delta3 >= 0
-  )
+  const availableCasts = casts.filter( action => {
+    const sum0 = inventory[0] + action.delta0
+    const sum1 = inventory[1] + action.delta1
+    const sum2 = inventory[2] + action.delta2
+    const sum3 = inventory[3] + action.delta3
+    const sum =  sum0 + sum1 + sum2 + sum3
+
+    return action.castable && sum0 >= 0 && sum0 >= 0 && sum0 >= 0 && sum0 >= 0 && sum <= inventoryCapacity
+  })
 
   if (availableRecipes.length > 0) {
     // Brew the most expensive
