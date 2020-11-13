@@ -83,31 +83,41 @@ while (true) {
   const recipes = actions.filter(a => a.type == ActionType.Brew)
   const casts = actions.filter(a => a.type == ActionType.Cast)
 
-  const availableRecipes = recipes.sort((a, b) => a.price - b.price) // Sort by price
-    .reverse() // most expensive first
-    .filter( action => 
-      inventory[0] + action.delta0 >= 0 &&
-      inventory[1] + action.delta1 >= 0 &&
-      inventory[2] + action.delta2 >= 0 &&
-      inventory[3] + action.delta3 >= 0
-    )
+  const bestRecipe = recipes.sort((a, b) => a.price - b.price).reverse()[0]
+  const inventoryAfterBestRecipe = [ // Check what's missing in inventory
+    inventory[0] + bestRecipe.delta0,
+    inventory[1] + bestRecipe.delta1,
+    inventory[2] + bestRecipe.delta2,
+    inventory[3] + bestRecipe.delta3
+  ]
+  const isBestRecipeBrewable = 
+    inventoryAfterBestRecipe[0] >= 0 &&
+    inventoryAfterBestRecipe[1] >= 0 &&
+    inventoryAfterBestRecipe[2] >= 0 &&
+    inventoryAfterBestRecipe[3] >= 0
 
-  const availableCasts = casts.filter( action => {
-    const sum0 = inventory[0] + action.delta0
-    const sum1 = inventory[1] + action.delta1
-    const sum2 = inventory[2] + action.delta2
-    const sum3 = inventory[3] + action.delta3
-    const sum =  sum0 + sum1 + sum2 + sum3
+  const availableCasts = casts.filter( cast => { // Choose casts that improve inventory
+    const sum0 = inventory[0] + cast.delta0
+    const sum1 = inventory[1] + cast.delta1
+    const sum2 = inventory[2] + cast.delta2
+    const sum3 = inventory[3] + cast.delta3
+    const sum = sum0 + sum1 + sum2 + sum3
 
-    return action.castable && sum0 >= 0 && sum0 >= 0 && sum0 >= 0 && sum0 >= 0 && sum <= inventoryCapacity
+    return cast.castable && 
+      sum <= inventoryCapacity &&
+      (
+        sum0 >= inventoryAfterBestRecipe[0] ||
+        sum1 >= inventoryAfterBestRecipe[1] ||
+        sum2 >= inventoryAfterBestRecipe[2] ||
+        sum3 >= inventoryAfterBestRecipe[3]
+      )
   })
 
-  if (availableRecipes.length > 0) {
-    // Brew the most expensive
-    console.log(availableRecipes[0].resultOrder())
+  if (isBestRecipeBrewable) {
+    console.log(bestRecipe.resultOrder())
   } else if (availableCasts.length > 0) {
-    // Cast the first available
-    console.log(availableCasts[0].resultOrder())
+    const cast = availableCasts[Math.floor(Math.random()*availableCasts.length)]
+    console.log(cast.resultOrder())
   } else {
     console.log(ActionType.Rest)
   }
