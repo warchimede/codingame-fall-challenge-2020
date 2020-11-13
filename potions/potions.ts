@@ -7,33 +7,34 @@ enum ActionType {
   Brew = "BREW",
   Cast = "CAST",
   OpponentCast = "OPPONENT_CAST",
-  Learn = "LEARN"
+  Learn = "LEARN",
+  Rest = "REST"
 }
 
 class Action {
-  identifier: number;
-  type: string;
-  delta0: number;
-  delta1: number;
-  delta2: number;
-  delta3: number;
-  price: number;
+  identifier: number
+  type: string
+  delta0: number
+  delta1: number
+  delta2: number
+  delta3: number
+  price: number
 
   constructor(identifier: number, type: string, delta0: number, delta1: number, delta2: number, delta3: number, price: number) {
-      this.identifier = identifier;
-      this.type = type;
-      this.delta0 = delta0;
-      this.delta1 = delta1;
-      this.delta2 = delta2;
-      this.delta3 = delta3;
-      this.price = price;
+      this.identifier = identifier
+      this.type = type
+      this.delta0 = delta0
+      this.delta1 = delta1
+      this.delta2 = delta2
+      this.delta3 = delta3
+      this.price = price
   }
 }
 
 // game loop
 while (true) {
-  var actions: Action[] = [];
-  var inventory: number[] = [];
+  var actions: Action[] = []
+  var inventory: number[] = []
 
   const actionCount: number = parseInt(readline()); // the number of spells and recipes in play
   for (let i = 0; i < actionCount; i++) {
@@ -50,8 +51,8 @@ while (true) {
     const castable: boolean = inputs[9] !== '0'; // in the first league: always 0; later: 1 if this is a castable player spell
     const repeatable: boolean = inputs[10] !== '0'; // for the first two leagues: always 0; later: 1 if this is a repeatable player spell
     
-    const action = new Action(actionId, actionType, delta0, delta1, delta2, delta3, price);
-    actions.push(action);
+    const action = new Action(actionId, actionType, delta0, delta1, delta2, delta3, price)
+    actions.push(action)
   }
   for (let i = 0; i < 2; i++) {
     var inputs: string[] = readline().split(' ');
@@ -61,20 +62,33 @@ while (true) {
     const inv3: number = parseInt(inputs[3]);
     const score: number = parseInt(inputs[4]); // amount of rupees
 
-    inventory = [inv0, inv1, inv2, inv3];
+    inventory = [inv0, inv1, inv2, inv3]
   }
 
   // Write an action using console.log()
   // To debug: console.error('Debug messages...');
-
-  // Sort by price
-  actions.sort((a, b) => a.price - b.price);
-  // Most expensive first
-  actions.reverse();
-  // Brew the most expensive
-  const action = actions[0];
-
   // in the first league: BREW <id> | WAIT; later: BREW <id> | CAST <id> [<times>] | LEARN <id> | REST | WAIT
-  console.log(`${action.type} ${action.identifier}`);
-}
+ 
+  var recipes = actions.filter(a => a.type == ActionType.Brew)
+  var casts = actions.filter(a => a.type == ActionType.Cast)
 
+  var availableRecipes = recipes.sort((a, b) => a.price - b.price) // Sort by price
+    .reverse() // most expensive first
+    .filter( action => 
+      inventory[0] + action.delta0 >= 0 &&
+      inventory[1] + action.delta1 >= 0 &&
+      inventory[2] + action.delta2 >= 0 &&
+      inventory[3] + action.delta3 >= 0
+    )
+
+  // var availableCasts = casts.
+  console.error(casts)
+
+  if (availableRecipes.length > 0) {
+    // Brew the most expensive
+    const action = actions[0]
+    console.log(`${action.type} ${action.identifier}`)
+  } else {
+    console.log(ActionType.Rest)
+  }
+}
