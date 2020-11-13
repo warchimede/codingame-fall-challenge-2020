@@ -69,6 +69,8 @@ while (true) {
 
   // Sort by price
   actions.sort((a, b) => a.price - b.price);
+  // Most expensive first
+  actions.reverse();
   // Brew the most expensive
   const action = actions[0];
 
