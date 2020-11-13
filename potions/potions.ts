@@ -29,6 +29,10 @@ class Action {
       this.delta3 = delta3
       this.price = price
   }
+
+  resultOrder(): string {
+    return `${this.type} ${this.identifier}`
+  }
 }
 
 // game loop
@@ -69,10 +73,10 @@ while (true) {
   // To debug: console.error('Debug messages...');
   // in the first league: BREW <id> | WAIT; later: BREW <id> | CAST <id> [<times>] | LEARN <id> | REST | WAIT
  
-  var recipes = actions.filter(a => a.type == ActionType.Brew)
-  var casts = actions.filter(a => a.type == ActionType.Cast)
+  const recipes = actions.filter(a => a.type == ActionType.Brew)
+  const casts = actions.filter(a => a.type == ActionType.Cast)
 
-  var availableRecipes = recipes.sort((a, b) => a.price - b.price) // Sort by price
+  const availableRecipes = recipes.sort((a, b) => a.price - b.price) // Sort by price
     .reverse() // most expensive first
     .filter( action => 
       inventory[0] + action.delta0 >= 0 &&
@@ -81,13 +85,19 @@ while (true) {
       inventory[3] + action.delta3 >= 0
     )
 
-  // var availableCasts = casts.
-  console.error(casts)
+  const availableCasts = casts.filter( action =>
+    inventory[0] + action.delta0 >= 0 &&
+    inventory[1] + action.delta1 >= 0 &&
+    inventory[2] + action.delta2 >= 0 &&
+    inventory[3] + action.delta3 >= 0
+  )
 
   if (availableRecipes.length > 0) {
     // Brew the most expensive
-    const action = actions[0]
-    console.log(`${action.type} ${action.identifier}`)
+    console.log(availableRecipes[0].resultOrder())
+  } else if (availableCasts.length > 0) {
+    // Cast the first available
+    console.log(availableCasts[0].resultOrder())
   } else {
     console.log(ActionType.Rest)
   }
