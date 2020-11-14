@@ -100,11 +100,20 @@ while (true) {
     const hasEnoughToCast = (inventory[0] + spell.delta0 >= 0) &&
                             (inventory[1] + spell.delta1 >= 0) &&
                             (inventory[2] + spell.delta2 >= 0)
-    const isResultNotTooMuch = (inventoryAfterBestRecipe[1] + spell.delta1 <= 0) &&
-                               (inventoryAfterBestRecipe[2] + spell.delta2 <= 0) &&
-                               (inventoryAfterBestRecipe[3] + spell.delta3 <= 0)
 
-    return spell.castable && hasEnoughToCast && isResultNotTooMuch
+    const hasEnoughInventoryCapacity = (inventory[0] + inventory[1] + inventory[2] + inventory[3] +
+                                      spell.delta0 + spell.delta0 + spell.delta0 + spell.delta0) <= inventoryCapacity
+
+    const improves3 = (inventoryAfterBestRecipe[3] + spell.delta3 <= 0) && (spell.delta3 > 0)
+    const improves2for3 = (inventoryAfterBestRecipe[3] < 0) && (spell.delta2 > 0)
+    const improves2 = (inventoryAfterBestRecipe[2] + spell.delta2 <= 0) && (spell.delta2 > 0)
+    const improves1for2 = (inventoryAfterBestRecipe[2] < 0) && (spell.delta1 > 0)
+    const improves1 = (inventoryAfterBestRecipe[1] + spell.delta1 <= 0) && (spell.delta1 > 0)
+    const improves0for1 = (inventoryAfterBestRecipe[1] < 0) && (spell.delta0 > 0)
+    const improves0 = (inventoryAfterBestRecipe[0] < 0) && (spell.delta0 > 0)
+    const isResultNotTooMuch = improves3 || improves2for3 || improves2 || improves1for2 || improves1 || improves0for1 || improves0
+  
+    return spell.castable && hasEnoughToCast && hasEnoughInventoryCapacity && isResultNotTooMuch
   }).reverse()
 
   if (isBestRecipeBrewable) {
