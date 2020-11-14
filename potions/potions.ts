@@ -110,7 +110,7 @@ while (true) {
     const improves1for2 = (inventoryAfterBestRecipe[2] < 0) && (spell.delta1 > 0)
     const improves1 = (inventoryAfterBestRecipe[1] + spell.delta1 <= 0) && (spell.delta1 > 0)
     const improves0for1 = (inventoryAfterBestRecipe[1] < 0) && (spell.delta0 > 0)
-    const improves0 = (inventoryAfterBestRecipe[0] < 0) && (spell.delta0 > 0)
+    const improves0 = spell.delta0 > 0
     const isResultNotTooMuch = improves3 || improves2for3 || improves2 || improves1for2 || improves1 || improves0for1 || improves0
   
     return spell.castable && hasEnoughToCast && hasEnoughInventoryCapacity && isResultNotTooMuch
