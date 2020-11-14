@@ -107,23 +107,6 @@ while (true) {
     return spell.castable && hasEnoughToCast && isResultNotTooMuch
   }).reverse()
 
-  const availableSpells = spells.filter( spell => { // Choose casts that improve inventory
-    const sum0 = inventory[0] + spell.delta0
-    const sum1 = inventory[1] + spell.delta1
-    const sum2 = inventory[2] + spell.delta2
-    const sum3 = inventory[3] + spell.delta3
-    const sum = sum0 + sum1 + sum2 + sum3
-
-    return spell.castable && 
-      sum <= inventoryCapacity &&
-      (
-        sum0 >= inventoryAfterBestRecipe[0] ||
-        sum1 >= inventoryAfterBestRecipe[1] ||
-        sum2 >= inventoryAfterBestRecipe[2] ||
-        sum3 >= inventoryAfterBestRecipe[3]
-      )
-  })
-
   if (isBestRecipeBrewable) {
     console.log(bestRecipe.resultOrder())
   } else if (bestSpells.length > 0) {
