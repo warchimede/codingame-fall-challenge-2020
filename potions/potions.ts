@@ -102,7 +102,7 @@ while (true) {
                             (inventory[2] + spell.delta2 >= 0)
 
     const hasEnoughInventoryCapacity = (inventory[0] + inventory[1] + inventory[2] + inventory[3] +
-                                      spell.delta0 + spell.delta0 + spell.delta0 + spell.delta0) <= inventoryCapacity
+                                      spell.delta0 + spell.delta1 + spell.delta2 + spell.delta3) <= inventoryCapacity
 
     const improves3 = (inventoryAfterBestRecipe[3] + spell.delta3 <= 0) && (spell.delta3 > 0)
     const improves2for3 = (inventoryAfterBestRecipe[3] < 0) && (spell.delta2 > 0)
