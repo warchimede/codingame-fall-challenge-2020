@@ -81,7 +81,7 @@ while (true) {
   // in the first league: BREW <id> | WAIT; later: BREW <id> | CAST <id> [<times>] | LEARN <id> | REST | WAIT
  
   const recipes = actions.filter(a => a.type == ActionType.Brew)
-  const casts = actions.filter(a => a.type == ActionType.Cast)
+  const spells = actions.filter(a => a.type == ActionType.Cast)
 
   const bestRecipe = recipes.sort((a, b) => a.price - b.price).reverse()[0]
   const inventoryAfterBestRecipe = [ // Check what's missing in inventory
@@ -96,14 +96,25 @@ while (true) {
     inventoryAfterBestRecipe[2] >= 0 &&
     inventoryAfterBestRecipe[3] >= 0
 
-  const availableCasts = casts.filter( cast => { // Choose casts that improve inventory
-    const sum0 = inventory[0] + cast.delta0
-    const sum1 = inventory[1] + cast.delta1
-    const sum2 = inventory[2] + cast.delta2
-    const sum3 = inventory[3] + cast.delta3
+  const bestSpells = spells.filter( spell => {
+    const hasEnoughToCast = (inventory[0] + spell.delta0 >= 0) &&
+                            (inventory[1] + spell.delta1 >= 0) &&
+                            (inventory[2] + spell.delta2 >= 0)
+    const isResultNotTooMuch = (inventoryAfterBestRecipe[1] + spell.delta1 <= 0) &&
+                               (inventoryAfterBestRecipe[2] + spell.delta2 <= 0) &&
+                               (inventoryAfterBestRecipe[3] + spell.delta3 <= 0)
+
+    return spell.castable && hasEnoughToCast && isResultNotTooMuch
+  }).reverse()
+
+  const availableSpells = spells.filter( spell => { // Choose casts that improve inventory
+    const sum0 = inventory[0] + spell.delta0
+    const sum1 = inventory[1] + spell.delta1
+    const sum2 = inventory[2] + spell.delta2
+    const sum3 = inventory[3] + spell.delta3
     const sum = sum0 + sum1 + sum2 + sum3
 
-    return cast.castable && 
+    return spell.castable && 
       sum <= inventoryCapacity &&
       (
         sum0 >= inventoryAfterBestRecipe[0] ||
@@ -115,9 +126,8 @@ while (true) {
 
   if (isBestRecipeBrewable) {
     console.log(bestRecipe.resultOrder())
-  } else if (availableCasts.length > 0) {
-    const cast = availableCasts[Math.floor(Math.random()*availableCasts.length)]
-    console.log(cast.resultOrder())
+  } else if (bestSpells.length > 0) {
+    console.log(bestSpells[0].resultOrder())
   } else {
     console.log(ActionType.Rest)
   }
