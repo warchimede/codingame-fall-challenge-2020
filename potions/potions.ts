@@ -108,15 +108,9 @@ while (true) {
 
   // const bestRecipe = recipes.sort((a, b) => a.price - b.price).reverse()[0] // most expensive selling price
   const bestRecipe = recipes[0] // first recipe
-  const inventoryAfterBestRecipe = [ // Check what's missing in inventory
-    inventory[0] + bestRecipe.delta0,
-    inventory[1] + bestRecipe.delta1,
-    inventory[2] + bestRecipe.delta2,
-    inventory[3] + bestRecipe.delta3
-  ]
 
   const bestSpells = spells.filter( spell => {
-    const result = spell.resultInventoryAfterAction(inventory)
+    const result = bestRecipe.resultInventoryAfterAction(inventory)
     const improves3 = (result[3] + spell.delta3 <= 0) && (spell.delta3 > 0)
     const improves2for3 = (result[3] < 0) && (spell.delta2 > 0)
     const improves2 = (result[2] + spell.delta2 <= 0) && (spell.delta2 > 0)
