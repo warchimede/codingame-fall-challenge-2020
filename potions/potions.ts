@@ -65,6 +65,10 @@ class Action {
     return this.type == ActionType.Cast && this.castable && this.isInventoryCompatible(inventory)
   }
 
+  canPayTax(inventory: number[]): boolean {
+    return inventory[0] >= this.taxCount
+  }
+
   resultOrder(): string {
     return `${this.type} ${this.identifier}`
   }
