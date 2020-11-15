@@ -39,12 +39,22 @@ class Action {
       this.repeatable = repeatable
   }
 
+  resultInventoryAfterAction(current: number[]): number[] { 
+    return [inventory[0] + this.delta0, inventory[1] + this.delta1, inventory[2] + this.delta2, inventory[3] + this.delta3]
+  }
+
+  isInventoryCompatible(inventory: number[]): boolean {
+    const result = this.resultInventoryAfterAction(inventory)
+    return result.map(x => x >= 0).reduce((acc, val) => acc && val) // There are enough resources in inventory
+        && (result.reduce((acc, val) => acc + val) <= inventoryCapacity) // Respects inventory capacity
+  }
+
   isBrewable(inventory: number[]): boolean {
-    return this.type == ActionType.Brew &&
-    inventory[0] + this.delta0 >= 0 &&
-    inventory[1] + this.delta1 >=0 &&
-    inventory[2] + this.delta2 >= 0 &&
-    inventory[3] + this.delta3 >= 0
+    return this.type == ActionType.Brew && this.isInventoryCompatible(inventory)
+  }
+
+  isCastable(inventory: number[]): boolean {
+    return this.type == ActionType.Cast && this.castable && this.isInventoryCompatible(inventory)
   }
 
   resultOrder(): string {
