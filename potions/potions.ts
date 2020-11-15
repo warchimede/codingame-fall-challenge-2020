@@ -103,12 +103,18 @@ while (true) {
   // To debug: console.error('Debug messages...');
   // in the first league: BREW <id> | WAIT; later: BREW <id> | CAST <id> [<times>] | LEARN <id> | REST | WAIT
  
+  /* BREW Recipe */
   const recipes = actions.filter(a => a.type == ActionType.Brew)
-  const spells = actions.filter(a => a.type == ActionType.Cast)
-
   // const bestRecipe = recipes.sort((a, b) => a.price - b.price).reverse()[0] // most expensive selling price
   const bestRecipe = recipes[0] // first recipe
 
+  if (bestRecipe.isBrewable(inventory)) {
+    console.log(bestRecipe.resultOrder())
+    continue
+  } 
+
+  /* CAST spell */
+  const spells = actions.filter(a => a.type == ActionType.Cast)
   const bestSpells = spells.filter( spell => {
     const result = bestRecipe.resultInventoryAfterAction(inventory)
     const improves3 = (result[3] + spell.delta3 <= 0) && (spell.delta3 > 0)
@@ -123,15 +129,14 @@ while (true) {
     return spell.isCastable(inventory) && isResultNotTooMuch
   }).reverse()
 
-  if (bestRecipe.isBrewable(inventory)) {
-    console.log(bestRecipe.resultOrder())
-  } else if (bestSpells.length > 0) {
+  if (bestSpells.length > 0) {
     console.log(bestSpells[0].resultOrder())
-  // } else if (lessons.length > 0) {
-  //   // const lesson = lessons[Math.floor(Math.random()*lessons.length)]
-  //   // console.log(lesson.resultOrder())
-  //   console.log(lessons[0].resultOrder())
-  } else {
-    console.log(ActionType.Rest)
+    continue
   }
+
+  /* LEARN spell */
+  const lessons = actions.filter(a => a.type == ActionType.Learn)
+
+  /* REST */
+  console.log(ActionType.Rest)
 }
