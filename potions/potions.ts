@@ -81,7 +81,7 @@ function selectBrewableRecipe(recipes: Action[], inventory: number[]): Action {
 const inventoryCapacity = 10
 
 var learnedSpells = 0
-const maxLearnedSpells = 2
+const maxLearnedSpells = 3
 
 // game loop
 while (true) {
