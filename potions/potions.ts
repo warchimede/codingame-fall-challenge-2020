@@ -83,6 +83,9 @@ function selectBrewableRecipe(recipes: Action[], inventory: number[]): Action {
 
 const inventoryCapacity = 10
 
+var learnedSpells = 0
+const maxLearnedSpells = 2
+
 // game loop
 while (true) {
   var actions: Action[] = []
@@ -182,8 +185,19 @@ while (true) {
     continue
   }
 
-  /* LEARN spell */
-  const lessons = actions.filter(a => a.type == ActionType.Learn)
+  if (learnedSpells < maxLearnedSpells) {
+    /* LEARN spell */
+    const lessons = actions.filter(a => a.type == ActionType.Learn)
+    // const learnableLessons = lessons.filter(l => l.canPayTax(inventory))
+    const learnableLessons = lessons.filter(l => l.taxCount == 0)
+    if (learnableLessons.length > 0) {
+      // const lesson = learnableLessons[Math.floor(Math.random()*learnableLessons.length)]
+      const lesson = learnableLessons[0]
+      ++learnedSpells
+      doAction(lesson)
+      continue
+    }
+  }
 
   /* REST */
   console.log(ActionType.Rest)
