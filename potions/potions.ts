@@ -66,7 +66,7 @@ while (true) {
     const castable: boolean = inputs[9] !== '0'; // in the first league: always 0; later: 1 if this is a castable player spell
     const repeatable: boolean = inputs[10] !== '0'; // for the first two leagues: always 0; later: 1 if this is a repeatable player spell
     
-    const action = new Action(actionId, actionType, delta0, delta1, delta2, delta3, price, castable)
+    const action = new Action(actionId, actionType, delta0, delta1, delta2, delta3, price, tomeIndex, taxCount, castable, repeatable)
     actions.push(action)
   }
   for (let i = 0; i < 2; i++) {
