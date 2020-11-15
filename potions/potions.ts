@@ -7,6 +7,10 @@ function doAction(a: Action) {
   console.log(a.resultOrder())
 }
 
+function printDebug(s: any[]) {
+  console.error(s)
+}
+
 enum ActionType {
   Brew = "BREW",
   Cast = "CAST",
@@ -163,8 +167,9 @@ while (true) {
     }
   }
 
-  if (spells.length > 0) {
-    doAction(spells[0])
+  const spells0 = spells.filter(s => s.delta0 > 0)
+  if (spells0.length > 0) {
+    doAction(spells0[0])
     continue
   }
 
