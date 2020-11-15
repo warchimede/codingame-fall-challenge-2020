@@ -19,10 +19,13 @@ class Action {
   delta2: number
   delta3: number
   price: number
+  tomeIndex: number
+  taxCount: number
   castable: boolean
+  repeatable: boolean
 
   constructor(identifier: number, type: string, delta0: number, delta1: number, delta2: number, delta3: number,
-    price: number, castable: boolean) {
+    price: number, tomeIndex: number, taxCount: number, castable: boolean, repeatable: boolean) {
       this.identifier = identifier
       this.type = type
       this.delta0 = delta0
@@ -30,7 +33,10 @@ class Action {
       this.delta2 = delta2
       this.delta3 = delta3
       this.price = price
+      this.tomeIndex = tomeIndex
+      this.taxCount = taxCount
       this.castable = castable
+      this.repeatable = repeatable
   }
 
   resultOrder(): string {
