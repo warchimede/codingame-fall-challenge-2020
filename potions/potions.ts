@@ -88,8 +88,10 @@ while (true) {
  
   const recipes = actions.filter(a => a.type == ActionType.Brew)
   const spells = actions.filter(a => a.type == ActionType.Cast)
+  const lessons = actions.filter(a => a.type == ActionType.Learn)
 
-  const bestRecipe = recipes.sort((a, b) => a.price - b.price).reverse()[0]
+  // const bestRecipe = recipes.sort((a, b) => a.price - b.price).reverse()[0] // most expensive selling price
+  const bestRecipe = recipes[0] // first recipe
   const inventoryAfterBestRecipe = [ // Check what's missing in inventory
     inventory[0] + bestRecipe.delta0,
     inventory[1] + bestRecipe.delta1,
@@ -126,6 +128,10 @@ while (true) {
     console.log(bestRecipe.resultOrder())
   } else if (bestSpells.length > 0) {
     console.log(bestSpells[0].resultOrder())
+  // } else if (lessons.length > 0) {
+  //   // const lesson = lessons[Math.floor(Math.random()*lessons.length)]
+  //   // console.log(lesson.resultOrder())
+  //   console.log(lessons[0].resultOrder())
   } else {
     console.log(ActionType.Rest)
   }
