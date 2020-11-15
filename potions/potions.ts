@@ -3,6 +3,10 @@
  * the standard input according to the problem statement.
  **/
 
+function doAction(a: Action) {
+  console.log(a.resultOrder())
+}
+
 enum ActionType {
   Brew = "BREW",
   Cast = "CAST",
@@ -109,28 +113,58 @@ while (true) {
   const bestRecipe = recipes[0] // first recipe
 
   if (bestRecipe.isBrewable(inventory)) {
-    console.log(bestRecipe.resultOrder())
+    doAction(bestRecipe)
     continue
   } 
 
   /* CAST spell */
-  const spells = actions.filter(a => a.type == ActionType.Cast)
-  const bestSpells = spells.filter( spell => {
-    const result = bestRecipe.resultInventoryAfterAction(inventory)
-    const improves3 = (result[3] + spell.delta3 <= 0) && (spell.delta3 > 0)
-    const improves2for3 = (result[3] < 0) && (spell.delta2 > 0)
-    const improves2 = (result[2] + spell.delta2 <= 0) && (spell.delta2 > 0)
-    const improves1for2 = (result[2] < 0) && (spell.delta1 > 0)
-    const improves1 = (result[1] + spell.delta1 <= 0) && (spell.delta1 > 0)
-    const improves0for1 = (result[1] < 0) && (spell.delta0 > 0)
-    const improves0 = spell.delta0 > 0
-    const isResultNotTooMuch = improves3 || improves2for3 || improves2 || improves1for2 || improves1 || improves0for1 || improves0
-  
-    return spell.isCastable(inventory) && isResultNotTooMuch
-  }).reverse()
+  const spells = actions.filter(a => a.isCastable(inventory))
+  const resInv = bestRecipe.resultInventoryAfterAction(inventory)
 
-  if (bestSpells.length > 0) {
-    console.log(bestSpells[0].resultOrder())
+  if (resInv[3] < 0) {
+    const spells3 = spells.filter(s => s.delta3 > 0)
+    if (spells3.length > 0) {
+      doAction(spells3[0])
+      continue
+    }
+
+    const spells2 = spells.filter(s => s.delta2 > 0)
+    if (spells2.length > 0) {
+      doAction(spells2[0])
+      continue
+    }
+
+    const spells1 = spells.filter(s => s.delta1 > 0)
+    if (spells1.length > 0) {
+      doAction(spells1[0])
+      continue
+    }
+  }
+
+  if (resInv[2] < 0) {
+    const spells2 = spells.filter(s => s.delta2 > 0)
+    if (spells2.length > 0) {
+      doAction(spells2[0])
+      continue
+    }
+
+    const spells1 = spells.filter(s => s.delta1 > 0)
+    if (spells1.length > 0) {
+      doAction(spells1[0])
+      continue
+    }
+  }
+
+  if (resInv[1] < 0) {
+    const spells1 = spells.filter(s => s.delta1 > 0)
+    if (spells1.length > 0) {
+      doAction(spells1[0])
+      continue
+    }
+  }
+
+  if (spells.length > 0) {
+    doAction(spells[0])
     continue
   }
 
