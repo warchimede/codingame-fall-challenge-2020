@@ -70,6 +70,13 @@ class Action {
   }
 }
 
+function selectBrewableRecipe(recipes: Action[], inventory: number[]): Action {
+  const recipe = recipes[0]
+  if (recipe.isBrewable(inventory)) {
+    return recipe
+  }
+}
+
 const inventoryCapacity = 10
 
 // game loop
@@ -113,17 +120,15 @@ while (true) {
  
   /* BREW Recipe */
   const recipes = actions.filter(a => a.type == ActionType.Brew)
-  // const bestRecipe = recipes.sort((a, b) => a.price - b.price).reverse()[0] // most expensive selling price
-  const bestRecipe = recipes[0] // first recipe
-
-  if (bestRecipe.isBrewable(inventory)) {
-    doAction(bestRecipe)
+  const brewableRecipe = selectBrewableRecipe(recipes, inventory)
+  if (brewableRecipe) {
+    doAction(brewableRecipe)
     continue
   } 
 
   /* CAST spell */
   const spells = actions.filter(a => a.isCastable(inventory))
-  const resInv = bestRecipe.resultInventoryAfterAction(inventory)
+  const resInv = recipes[0].resultInventoryAfterAction(inventory)
 
   if (resInv[3] < 0) {
     const spells3 = spells.filter(s => s.delta3 > 0)
