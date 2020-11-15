@@ -39,7 +39,7 @@ class Action {
       this.repeatable = repeatable
   }
 
-  resultInventoryAfterAction(current: number[]): number[] { 
+  resultInventoryAfterAction(inventory: number[]): number[] { 
     return [inventory[0] + this.delta0, inventory[1] + this.delta1, inventory[2] + this.delta2, inventory[3] + this.delta3]
   }
 
@@ -93,7 +93,6 @@ while (true) {
     const inv1: number = parseInt(inputs[1]);
     const inv2: number = parseInt(inputs[2]);
     const inv3: number = parseInt(inputs[3]);
-    const score: number = parseInt(inputs[4]); // amount of rupees
 
     if (i == 0) {
       inventory = [inv0, inv1, inv2, inv3]
@@ -106,7 +105,6 @@ while (true) {
  
   const recipes = actions.filter(a => a.type == ActionType.Brew)
   const spells = actions.filter(a => a.type == ActionType.Cast)
-  const lessons = actions.filter(a => a.type == ActionType.Learn)
 
   // const bestRecipe = recipes.sort((a, b) => a.price - b.price).reverse()[0] // most expensive selling price
   const bestRecipe = recipes[0] // first recipe
@@ -116,33 +114,22 @@ while (true) {
     inventory[2] + bestRecipe.delta2,
     inventory[3] + bestRecipe.delta3
   ]
-  const isBestRecipeBrewable = 
-    inventoryAfterBestRecipe[0] >= 0 &&
-    inventoryAfterBestRecipe[1] >= 0 &&
-    inventoryAfterBestRecipe[2] >= 0 &&
-    inventoryAfterBestRecipe[3] >= 0
 
   const bestSpells = spells.filter( spell => {
-    const hasEnoughToCast = (inventory[0] + spell.delta0 >= 0) &&
-                            (inventory[1] + spell.delta1 >= 0) &&
-                            (inventory[2] + spell.delta2 >= 0)
-
-    const hasEnoughInventoryCapacity = (inventory[0] + inventory[1] + inventory[2] + inventory[3] +
-                                      spell.delta0 + spell.delta1 + spell.delta2 + spell.delta3) <= inventoryCapacity
-
-    const improves3 = (inventoryAfterBestRecipe[3] + spell.delta3 <= 0) && (spell.delta3 > 0)
-    const improves2for3 = (inventoryAfterBestRecipe[3] < 0) && (spell.delta2 > 0)
-    const improves2 = (inventoryAfterBestRecipe[2] + spell.delta2 <= 0) && (spell.delta2 > 0)
-    const improves1for2 = (inventoryAfterBestRecipe[2] < 0) && (spell.delta1 > 0)
-    const improves1 = (inventoryAfterBestRecipe[1] + spell.delta1 <= 0) && (spell.delta1 > 0)
-    const improves0for1 = (inventoryAfterBestRecipe[1] < 0) && (spell.delta0 > 0)
+    const result = spell.resultInventoryAfterAction(inventory)
+    const improves3 = (result[3] + spell.delta3 <= 0) && (spell.delta3 > 0)
+    const improves2for3 = (result[3] < 0) && (spell.delta2 > 0)
+    const improves2 = (result[2] + spell.delta2 <= 0) && (spell.delta2 > 0)
+    const improves1for2 = (result[2] < 0) && (spell.delta1 > 0)
+    const improves1 = (result[1] + spell.delta1 <= 0) && (spell.delta1 > 0)
+    const improves0for1 = (result[1] < 0) && (spell.delta0 > 0)
     const improves0 = spell.delta0 > 0
     const isResultNotTooMuch = improves3 || improves2for3 || improves2 || improves1for2 || improves1 || improves0for1 || improves0
   
-    return spell.castable && hasEnoughToCast && hasEnoughInventoryCapacity && isResultNotTooMuch
+    return spell.isCastable(inventory) && isResultNotTooMuch
   }).reverse()
 
-  if (isBestRecipeBrewable) {
+  if (bestRecipe.isBrewable(inventory)) {
     console.log(bestRecipe.resultOrder())
   } else if (bestSpells.length > 0) {
     console.log(bestSpells[0].resultOrder())
