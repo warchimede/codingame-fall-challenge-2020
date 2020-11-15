@@ -75,10 +75,7 @@ class Action {
 }
 
 function selectBrewableRecipe(recipes: Action[], inventory: number[]): Action {
-  const recipe = recipes[0]
-  if (recipe.isBrewable(inventory)) {
-    return recipe
-  }
+  return recipes.filter(r => r.isBrewable(inventory))[0]
 }
 
 const inventoryCapacity = 10
