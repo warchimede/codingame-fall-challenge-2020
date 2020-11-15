@@ -39,6 +39,14 @@ class Action {
       this.repeatable = repeatable
   }
 
+  isBrewable(inventory: number[]): boolean {
+    return this.type == ActionType.Brew &&
+    inventory[0] + this.delta0 >= 0 &&
+    inventory[1] + this.delta1 >=0 &&
+    inventory[2] + this.delta2 >= 0 &&
+    inventory[3] + this.delta3 >= 0
+  }
+
   resultOrder(): string {
     return `${this.type} ${this.identifier}`
   }
