@@ -75,7 +75,7 @@ class Action {
 }
 
 function selectBrewableRecipe(recipes: Action[], inventory: number[]): Action {
-  return recipes.filter(r => r.isBrewable(inventory))[0]
+  return recipes.filter(r => r.isBrewable(inventory)).sort((a, b) => a.price - b.price)[0]
 }
 
 const inventoryCapacity = 10
