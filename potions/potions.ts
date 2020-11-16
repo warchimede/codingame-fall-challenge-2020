@@ -78,6 +78,51 @@ function selectBrewableRecipe(recipes: Action[], inventory: number[]): Action {
   return recipes.filter(r => r.isBrewable(inventory)).sort((a, b) => a.price - b.price)[0]
 }
 
+function selectSpellForRecipe(spells: Action[], recipe: Action, inventory: number[]): Action {
+  const resInv = recipe.resultInventoryAfterAction(inventory)
+
+  if (resInv[3] < 0) {
+    const spells3 = spells.filter(s => s.delta3 > 0)
+    if (spells3.length > 0) {
+      return spells3[0]
+    }
+
+    const spells2 = spells.filter(s => s.delta2 > 0)
+    if (spells2.length > 0) {
+      return spells2[0]
+    }
+
+    const spells1 = spells.filter(s => s.delta1 > 0)
+    if (spells1.length > 0) {
+      return spells1[0]
+    }
+  }
+
+  if (resInv[2] < 0) {
+    const spells2 = spells.filter(s => s.delta2 > 0)
+    if (spells2.length > 0) {
+      return spells2[0]
+    }
+
+    const spells1 = spells.filter(s => s.delta1 > 0)
+    if (spells1.length > 0) {
+      return spells1[0]
+    }
+  }
+
+  if (resInv[1] < 0) {
+    const spells1 = spells.filter(s => s.delta1 > 0)
+    if (spells1.length > 0) {
+      return spells1[0]
+    }
+  }
+
+  const spells0 = spells.filter(s => s.delta0 > 0)
+  if (spells0.length > 0) {
+    return spells0[0]
+  }
+}
+
 const inventoryCapacity = 10
 
 var learnedSpells = 0
@@ -132,53 +177,9 @@ while (true) {
 
   /* CAST spell */
   const spells = actions.filter(a => a.isCastable(inventory))
-  const resInv = recipes[0].resultInventoryAfterAction(inventory)
-
-  if (resInv[3] < 0) {
-    const spells3 = spells.filter(s => s.delta3 > 0)
-    if (spells3.length > 0) {
-      doAction(spells3[0])
-      continue
-    }
-
-    const spells2 = spells.filter(s => s.delta2 > 0)
-    if (spells2.length > 0) {
-      doAction(spells2[0])
-      continue
-    }
-
-    const spells1 = spells.filter(s => s.delta1 > 0)
-    if (spells1.length > 0) {
-      doAction(spells1[0])
-      continue
-    }
-  }
-
-  if (resInv[2] < 0) {
-    const spells2 = spells.filter(s => s.delta2 > 0)
-    if (spells2.length > 0) {
-      doAction(spells2[0])
-      continue
-    }
-
-    const spells1 = spells.filter(s => s.delta1 > 0)
-    if (spells1.length > 0) {
-      doAction(spells1[0])
-      continue
-    }
-  }
-
-  if (resInv[1] < 0) {
-    const spells1 = spells.filter(s => s.delta1 > 0)
-    if (spells1.length > 0) {
-      doAction(spells1[0])
-      continue
-    }
-  }
-
-  const spells0 = spells.filter(s => s.delta0 > 0)
-  if (spells0.length > 0) {
-    doAction(spells0[0])
+  const spell = selectSpellForRecipe(spells, recipes[0], inventory)
+  if (spell) {
+    doAction(spell)
     continue
   }
 
