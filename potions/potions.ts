@@ -126,7 +126,7 @@ function selectSpellForRecipe(spells: Action[], recipe: Action, inventory: numbe
 const inventoryCapacity = 10
 
 var learnedSpells = 0
-const maxLearnedSpells = 3
+const maxLearnedSpells = 8
 
 // game loop
 while (true) {
@@ -167,6 +167,18 @@ while (true) {
   // To debug: console.error('Debug messages...');
   // in the first league: BREW <id> | WAIT; later: BREW <id> | CAST <id> [<times>] | LEARN <id> | REST | WAIT
  
+  if (learnedSpells < maxLearnedSpells) {
+    /* LEARN spell */
+    const lessons = actions.filter(a => a.type == ActionType.Learn)
+    const learnableLessons = lessons.filter(l => l.taxCount == 0)
+    if (learnableLessons.length > 0) {
+      const lesson = learnableLessons[0]
+      ++learnedSpells
+      doAction(lesson)
+      continue
+    }
+  }
+
   /* BREW Recipe */
   const recipes = actions.filter(a => a.type == ActionType.Brew)
   const brewableRecipe = selectBrewableRecipe(recipes, inventory)
@@ -181,20 +193,6 @@ while (true) {
   if (spell) {
     doAction(spell)
     continue
-  }
-
-  if (learnedSpells < maxLearnedSpells) {
-    /* LEARN spell */
-    const lessons = actions.filter(a => a.type == ActionType.Learn)
-    // const learnableLessons = lessons.filter(l => l.canPayTax(inventory))
-    const learnableLessons = lessons.filter(l => l.taxCount == 0)
-    if (learnableLessons.length > 0) {
-      // const lesson = learnableLessons[Math.floor(Math.random()*learnableLessons.length)]
-      const lesson = learnableLessons[0]
-      ++learnedSpells
-      doAction(lesson)
-      continue
-    }
   }
 
   /* REST */
