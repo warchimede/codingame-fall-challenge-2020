@@ -74,8 +74,19 @@ class Action {
   }
 }
 
+function sortRecipes(actions: Action[]): Action[] {
+  return actions.filter(a => a.type == ActionType.Brew)
+  .map((r, i) => {
+    if (i == 0) { r.price += 3 }
+    if (i == 1) { r.price += 1 }
+    return r
+  })
+  .sort((a, b) => a.price - b.price)
+  .reverse()
+}
+
 function selectBrewableRecipe(recipes: Action[], inventory: number[]): Action {
-  return recipes.filter(r => r.isBrewable(inventory)).sort((a, b) => a.price - b.price)[0]
+  return recipes.filter(r => r.isBrewable(inventory))[0]
 }
 
 function selectSpellForRecipe(spells: Action[], recipe: Action, inventory: number[]): Action {
@@ -126,7 +137,7 @@ function selectSpellForRecipe(spells: Action[], recipe: Action, inventory: numbe
 const inventoryCapacity = 10
 
 var learnedSpells = 0
-const maxLearnedSpells = 8
+const maxLearnedSpells = 7
 
 // game loop
 while (true) {
@@ -167,10 +178,11 @@ while (true) {
   // To debug: console.error('Debug messages...');
   // in the first league: BREW <id> | WAIT; later: BREW <id> | CAST <id> [<times>] | LEARN <id> | REST | WAIT
  
+  /* LEARN a lot first */
+  const learnableLessons = actions.filter(a => a.type == ActionType.Learn)
+                                    .filter(l => l.taxCount == 0)
   if (learnedSpells < maxLearnedSpells) {
     /* LEARN spell */
-    const lessons = actions.filter(a => a.type == ActionType.Learn)
-    const learnableLessons = lessons.filter(l => l.taxCount == 0)
     if (learnableLessons.length > 0) {
       const lesson = learnableLessons[0]
       ++learnedSpells
@@ -179,17 +191,20 @@ while (true) {
     }
   }
 
-  /* BREW Recipe */
-  const recipes = actions.filter(a => a.type == ActionType.Brew)
+  const recipes = sortRecipes(actions)
+  /* Try to brew already available recipe */
   const brewableRecipe = selectBrewableRecipe(recipes, inventory)
   if (brewableRecipe) {
     doAction(brewableRecipe)
     continue
-  } 
+  }
 
-  /* CAST spell */
+  /* Choose recipe */
+  const rec = recipes[0]
+  
+  /* CAST spell to get to most approach chosen recipe */
   const spells = actions.filter(a => a.isCastable(inventory))
-  const spell = selectSpellForRecipe(spells, recipes[0], inventory)
+  const spell = selectSpellForRecipe(spells, rec, inventory)
   if (spell) {
     doAction(spell)
     continue
