@@ -206,7 +206,7 @@ while (true) {
   /* Choose recipe */
   const rec = recipes[0]
   
-  /* CAST spell to get to most approach chosen recipe */
+  /* CAST spell to approach chosen recipe */
   const spells = actions.filter(a => a.isCastable(inventory))
   const spell = selectSpellForRecipe(spells, rec, inventory)
   if (spell) {
