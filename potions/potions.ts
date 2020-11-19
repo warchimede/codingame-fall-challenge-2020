@@ -92,45 +92,49 @@ function selectBrewableRecipe(recipes: Action[], inventory: number[]): Action {
 function selectSpellForRecipe(spells: Action[], recipe: Action, inventory: number[]): Action {
   const resInv = recipe.resultInventoryAfterAction(inventory)
 
+  const spell3 = spells.filter(s => s.delta3 > 0)
+                        .sort((a, b) => Math.abs(resInv[3] + a.delta3) - Math.abs(resInv[3] + b.delta3))
+                        [0]
+  const spell2 = spells.filter(s => s.delta2 > 0)
+                        .sort((a, b) => Math.abs(resInv[2] + a.delta2) - Math.abs(resInv[2] + b.delta2))
+                        [0]
+  const spell1 = spells.filter(s => s.delta1 > 0)
+                        .sort((a, b) => Math.abs(resInv[1] + a.delta1) - Math.abs(resInv[1] + b.delta1))
+                        [0]
+  const spell0 = spells.filter(s => s.delta0 > 0)
+                        .sort((a, b) => Math.abs(resInv[0] + a.delta0) - Math.abs(resInv[0] + b.delta0))
+                        .reverse()
+                        [0]
+
   if (resInv[3] < 0) {
-    const spells3 = spells.filter(s => s.delta3 > 0)
-    if (spells3.length > 0) {
-      return spells3[0]
+    if (spell3) {
+      return spell3
     }
-
-    const spells2 = spells.filter(s => s.delta2 > 0)
-    if (spells2.length > 0) {
-      return spells2[0]
+    if (spell2) {
+      return spell2
     }
-
-    const spells1 = spells.filter(s => s.delta1 > 0)
-    if (spells1.length > 0) {
-      return spells1[0]
+    if (spell1) {
+      return spell1
     }
   }
 
   if (resInv[2] < 0) {
-    const spells2 = spells.filter(s => s.delta2 > 0)
-    if (spells2.length > 0) {
-      return spells2[0]
+    if (spell2) {
+      return spell2
     }
-
-    const spells1 = spells.filter(s => s.delta1 > 0)
-    if (spells1.length > 0) {
-      return spells1[0]
+    if (spell1) {
+      return spell1
     }
   }
 
   if (resInv[1] < 0) {
-    const spells1 = spells.filter(s => s.delta1 > 0)
-    if (spells1.length > 0) {
-      return spells1[0]
+    if (spell1) {
+      return spell1
     }
   }
 
-  const spells0 = spells.filter(s => s.delta0 > 0)
-  if (spells0.length > 0) {
-    return spells0[0]
+  if (spell0) {
+    return spell0
   }
 }
 
