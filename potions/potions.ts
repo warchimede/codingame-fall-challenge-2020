@@ -143,6 +143,8 @@ const inventoryCapacity = 10
 var learnedSpells = 0
 const maxLearnedSpells = 7
 
+var currentRecipeId = -1
+
 // game loop
 while (true) {
   var actions: Action[] = []
@@ -204,7 +206,12 @@ while (true) {
   }
 
   /* Choose recipe */
-  const rec = recipes[0]
+  const recs = recipes.filter(r => r.identifier == currentRecipeId)
+  var rec = recs[0]
+  if (recs.length == 0) {
+    rec = recipes[0]
+    currentRecipeId = rec.identifier
+  }
   
   /* CAST spell to approach chosen recipe */
   const spells = actions.filter(a => a.isCastable(inventory))
