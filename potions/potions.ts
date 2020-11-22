@@ -74,7 +74,7 @@ class Action {
   }
 }
 
-function sortRecipes(actions: Action[]): Action[] {
+function sortRecipesByPrice(actions: Action[]): Action[] {
   return actions.filter(a => a.type == ActionType.Brew)
   .map((r, i) => {
     if (i == 0) { r.price += 3 }
@@ -143,7 +143,7 @@ const inventoryCapacity = 10
 var learnedSpells = 0
 const maxLearnedSpells = 7
 
-var currentRecipeId = -1
+var chosenRecipeId = -1
 
 // game loop
 while (true) {
@@ -197,7 +197,7 @@ while (true) {
     }
   }
 
-  const recipes = sortRecipes(actions)
+  const recipes = sortRecipesByPrice(actions)
   /* Try to brew already available recipe */
   const brewableRecipe = selectBrewableRecipe(recipes, inventory)
   if (brewableRecipe) {
@@ -206,11 +206,11 @@ while (true) {
   }
 
   /* Choose recipe */
-  const recs = recipes.filter(r => r.identifier == currentRecipeId)
+  const recs = recipes.filter(r => r.identifier == chosenRecipeId)
   var rec = recs[0]
   if (recs.length == 0) {
     rec = recipes[0]
-    currentRecipeId = rec.identifier
+    chosenRecipeId = rec.identifier
   }
   
   /* CAST spell to approach chosen recipe */
