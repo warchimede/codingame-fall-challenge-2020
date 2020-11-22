@@ -157,6 +157,22 @@ function selectSpellForRecipe(spells: Action[], recipe: Action, inventory: Delta
   }
 }
 
+function selectBestSpell(castableSpells: Action[], recipesByPrice: Action[], inventory: Delta): Action {
+  const resInvs = recipesByPrice.map(r => r.delta.add(inventory))
+                    .map(d => castableSpells.map(s => s.delta.add(d)))
+  var resJ = -1
+  resInvs.forEach(deltaArray => {
+    deltaArray.forEach((resAfterSpell, j) => {
+      if (resAfterSpell.isPositive() && resJ <= 0) {
+        resJ = j
+      }
+    })
+  })
+  if (resJ >= 0) {
+     return castableSpells[resJ]
+  }
+}
+
 const inventoryCapacity = 10
 
 var learnedSpells = 0
@@ -214,34 +230,25 @@ while (true) {
     }
   }
 
-  const recipes = sortRecipesByPrice(actions)
+  const recipesByPrice = sortRecipesByPrice(actions)
   const castableSpells = actions.filter(a => a.isCastable(inventory))
 
   /* Try to brew already available recipe */
-  const brewableRecipe = selectBrewableRecipe(recipes, inventory)
+  const brewableRecipe = selectBrewableRecipe(recipesByPrice, inventory)
   if (brewableRecipe) {
     doAction(brewableRecipe)
     continue
   }
 
-  /* Choose recipe */
-  const resInvs = recipes.map(r => r.delta.add(inventory))
-                    .map(d => castableSpells.map(s => s.delta.add(d)))
-  var resJ = -1
-  resInvs.forEach(deltaArray => {
-    deltaArray.forEach((resAfterSpell, j) => {
-      if (resAfterSpell.isPositive() && resJ <= 0) {
-        resJ = j
-      }
-    })
-  })
-  if (resJ >= 0) {
-     doAction(castableSpells[resJ])
-     continue
+  /* Choose best spell overall */
+  const bestSpell = selectBestSpell(castableSpells, recipesByPrice, inventory)
+  if (bestSpell) {
+    doAction(bestSpell)
+    continue
   }
   
-  /* CAST spell to approach chosen recipe */  
-  const spell = selectSpellForRecipe(castableSpells, recipes[0], inventory)
+  /* CAST spell to approach most expensive recipe */  
+  const spell = selectSpellForRecipe(castableSpells, recipesByPrice[0], inventory)
   if (spell) {
     doAction(spell)
     continue
