@@ -176,7 +176,7 @@ function selectBestSpell(castableSpells: Action[], recipesByPrice: Action[], inv
 const inventoryCapacity = 10
 
 var learnedSpells = 0
-const maxLearnedSpells = 7
+const maxLearnedSpells = 5
 
 // game loop
 while (true) {
