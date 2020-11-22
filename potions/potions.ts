@@ -168,15 +168,14 @@ function selectBestSpell(castableSpells: Action[], recipesByPrice: Action[], inv
       }
     })
   })
-  if (resJ >= 0) {
-     return castableSpells[resJ]
-  }
+
+  return null
 }
 
 const inventoryCapacity = 10
 
 var learnedSpells = 0
-const maxLearnedSpells = 5
+const maxLearnedSpells = 10
 
 // game loop
 while (true) {
