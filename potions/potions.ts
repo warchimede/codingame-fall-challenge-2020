@@ -162,8 +162,6 @@ const inventoryCapacity = 10
 var learnedSpells = 0
 const maxLearnedSpells = 7
 
-var chosenRecipeId = -1
-
 // game loop
 while (true) {
   var actions: Action[] = []
@@ -217,6 +215,8 @@ while (true) {
   }
 
   const recipes = sortRecipesByPrice(actions)
+  const castableSpells = actions.filter(a => a.isCastable(inventory))
+
   /* Try to brew already available recipe */
   const brewableRecipe = selectBrewableRecipe(recipes, inventory)
   if (brewableRecipe) {
@@ -224,19 +224,24 @@ while (true) {
     continue
   }
 
-  const spells  = actions.filter(a => a.type == ActionType.Cast)
-
   /* Choose recipe */
-  const recs = recipes.filter(r => r.identifier == chosenRecipeId)
-  var rec = recs[0]
-  if (recs.length == 0) {
-    rec = recipes[0]
-    chosenRecipeId = rec.identifier    
+  const resInvs = recipes.map(r => r.delta.add(inventory))
+                    .map(d => castableSpells.map(s => s.delta.add(d)))
+  var resJ = -1
+  resInvs.forEach(deltaArray => {
+    deltaArray.forEach((resAfterSpell, j) => {
+      if (resAfterSpell.isPositive() && resJ <= 0) {
+        resJ = j
+      }
+    })
+  })
+  if (resJ >= 0) {
+     doAction(castableSpells[resJ])
+     continue
   }
   
-  /* CAST spell to approach chosen recipe */
-  const castableSpells = actions.filter(a => a.isCastable(inventory))
-  const spell = selectSpellForRecipe(castableSpells, rec, inventory)
+  /* CAST spell to approach chosen recipe */  
+  const spell = selectSpellForRecipe(castableSpells, recipes[0], inventory)
   if (spell) {
     doAction(spell)
     continue
