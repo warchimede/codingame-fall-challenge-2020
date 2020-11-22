@@ -168,8 +168,25 @@ function selectBestSpell(castableSpells: Action[], recipesByPrice: Action[], inv
       }
     })
   })
+  if (resJ >= 0) {
+     return castableSpells[resJ]
+  }
 
-  return null
+  resInvs.forEach(deltaArray => {
+    deltaArray.forEach((resAfterSpell, j) => {
+      castableSpells.filter(s => s.isCastable(resAfterSpell))
+      .filter(s => s.identifier != castableSpells[j].identifier)
+      .map(s => s.delta.add(resAfterSpell))
+      .forEach(resAfterSecondSpell => {
+        if (resAfterSecondSpell.isPositive() && resJ <= 0) {
+          resJ = j
+        }
+      })
+    })
+  })
+  if (resJ >= 0) {
+    return castableSpells[resJ]
+  }
 }
 
 const inventoryCapacity = 10
